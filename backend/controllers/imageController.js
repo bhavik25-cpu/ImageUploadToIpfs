@@ -1,23 +1,23 @@
 // backend/controllers/imageController.js
-const axios = require('axios');
-const Image = require('../models/imageModel');
-const fs = require('fs');
-const path = require('path');
-const FormData = require('form-data');
-require('dotenv').config(); // Load environment variables from .env file
+const axios = require("axios");
+const Image = require("../models/imageModel");
+const fs = require("fs");
+const path = require("path");
+const FormData = require("form-data");
+require("dotenv").config(); // Load environment variables from .env file
 
 const uploadToIPFS = async (imagePath) => {
-  const apiUrl = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
+  const apiUrl = "https://api.pinata.cloud/pinning/pinFileToIPFS";
   const apiKey = process.env.PINATA_API_KEY;
   const apiSecretKey = process.env.PINATA_SECRET_API_KEY;
 
   const formData = new FormData();
-  formData.append('file', fs.createReadStream(imagePath));
+  formData.append("file", fs.createReadStream(imagePath));
 
   const response = await axios.post(apiUrl, formData, {
-    maxContentLength: 'Infinity',
+    maxContentLength: "Infinity",
     headers: {
-      'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+      "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
       pinata_api_key: apiKey,
       pinata_secret_api_key: apiSecretKey,
     },
@@ -26,16 +26,15 @@ const uploadToIPFS = async (imagePath) => {
   return response.data.IpfsHash;
 };
 
-
 const generateJsonCID = async (jsonData) => {
   try {
-    const apiUrl = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
+    const apiUrl = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
     const apiKey = process.env.PINATA_API_KEY;
     const apiSecretKey = process.env.PINATA_SECRET_API_KEY;
 
     const response = await axios.post(apiUrl, jsonData, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         pinata_api_key: apiKey,
         pinata_secret_api_key: apiSecretKey,
       },
@@ -43,25 +42,24 @@ const generateJsonCID = async (jsonData) => {
 
     return response.data.IpfsHash;
   } catch (error) {
-    console.error('Error generating JSON CID:', error);
-    throw new Error('Failed to generate JSON CID');
+    console.error("Error generating JSON CID:", error);
+    throw new Error("Failed to generate JSON CID");
   }
 };
 
-
 const uploadImage = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, attributes } = req.body;
 
     // Check if file is present
     if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
+      return res.status(400).json({ error: "No image file provided" });
     }
 
     const { path: tempPath, mimetype } = req.file;
-    const extension = mimetype.split('/')[1];
+    const extension = mimetype.split("/")[1];
     const imagePath = `images/${Date.now()}.${extension}`; // Generate a unique file name using timestamp
-    const destinationPath = path.join(__dirname, '..', 'public', imagePath);
+    const destinationPath = path.join(__dirname, "..", "public", imagePath);
     const directory = path.dirname(destinationPath);
     if (!fs.existsSync(directory)) {
       fs.mkdirSync(directory, { recursive: true });
@@ -77,7 +75,9 @@ const uploadImage = async (req, res) => {
       name,
       description,
       imageCID: `ipfs://${imageCID}`,
+      attributes: JSON.parse(attributes),
     };
+    console.log(attributes, "attributesattributesattributes");
 
     // Generate JSON CID and store it in the database
     const jsonCID = await generateJsonCID(JSON.stringify(jsonData));
@@ -89,22 +89,18 @@ const uploadImage = async (req, res) => {
       imagePath,
       imageCID,
       jsonCID,
+      attributes: JSON.parse(attributes),
     });
 
     const savedImage = await image.save();
 
     res.status(201).json(savedImage);
   } catch (error) {
-    console.error('Error uploading image:', error);
-    res.status(500).json({ error: 'Failed to upload image' });
+    console.error("Error uploading image:", error);
+    res.status(500).json({ error: "Failed to upload image" });
   }
 };
 
-
-
 module.exports = {
   uploadImage,
-  generateJsonCID,
 };
-
-

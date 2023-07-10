@@ -1,70 +1,50 @@
-# Getting Started with Create React App
+Image Upload to IPFS
+This project allows users to upload images to IPFS (InterPlanetary File System), a decentralized file storage system. The backend is built with Node.js and Express, and the frontend is built with React.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Installation
+Clone the repository:
 
-## Available Scripts
 
-In the project directory, you can run:
+git clone <repository-url>
+Navigate to the project directory:
 
-### `npm start`
+cd image-upload-to-ipfs
+Install the dependencies for both the backend and frontend:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+cd backend
+npm install
+cd ../frontend
+npm install
+Set up environment variables:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Create a .env file in the backend directory.
+Add the following environment variables to the .env file:
+MONGODB_URI: MongoDB connection URI.
+PINATA_API_KEY: API key for Pinata, a service used for pinning files to IPFS.
+PINATA_SECRET_API_KEY: Secret API key for Pinata.
+Start the backend server:
 
-### `npm test`
+cd backend
+npm start
+The server will start on http://localhost:5000.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Start the frontend development server:
 
-### `npm run build`
+cd frontend
+npm start
+The React development server will start on http://localhost:3000.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Open the application in your browser by navigating to http://localhost:3000.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Summary
+This project allows users to upload images to IPFS, a decentralized file storage system. The frontend provides a user interface for selecting an image file, entering a name and description for the image, and uploading it to the backend.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The backend receives the image file, saves it to a temporary folder, and then uploads it to IPFS using the Pinata API. The IPFS hash (CID) of the uploaded image is returned and saved in the database along with the image metadata.
 
-### `npm run eject`
+The frontend displays a preview of the selected image, and upon uploading, shows a success message. The uploaded image is stored in IPFS, and its metadata, including the IPFS CID, is saved in the MongoDB database.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+This project can serve as a starting point for building applications that require image uploads to IPFS, such as decentralized image galleries or NFT marketplaces.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

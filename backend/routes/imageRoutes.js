@@ -8,7 +8,4 @@ const upload = multer({ dest: 'temp/' }); // Specify the temporary destination f
 
 router.post('/', upload.single('image'), imageController.uploadImage);
 
-router.post('/generateJsonCID', imageController.generateJsonCID);
-
-
 module.exports = router;

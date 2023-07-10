@@ -6,7 +6,7 @@ import ImageUpload from './components/ImageUpload';
 function App() {
   return (
     <div className="app">
-      <h1>Image Upload</h1>
+      <h1>IPFS Image Upload </h1>
       <TabView>
         <TabPanel header="Image">
           <ImageUpload />
