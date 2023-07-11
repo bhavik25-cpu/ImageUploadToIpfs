@@ -26,27 +26,6 @@ const uploadToIPFS = async (imagePath) => {
   return response.data.IpfsHash;
 };
 
-const generateJsonCID = async (jsonData) => {
-  try {
-    const apiUrl = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
-    const apiKey = process.env.PINATA_API_KEY;
-    const apiSecretKey = process.env.PINATA_SECRET_API_KEY;
-
-    const response = await axios.post(apiUrl, jsonData, {
-      headers: {
-        "Content-Type": "application/json",
-        pinata_api_key: apiKey,
-        pinata_secret_api_key: apiSecretKey,
-      },
-    });
-
-    return response.data.IpfsHash;
-  } catch (error) {
-    console.error("Error generating JSON CID:", error);
-    throw new Error("Failed to generate JSON CID");
-  }
-};
-
 const uploadImage = async (req, res) => {
   try {
     const { name, description, attributes } = req.body;
@@ -77,10 +56,6 @@ const uploadImage = async (req, res) => {
       imageCID: `ipfs://${imageCID}`,
       attributes: JSON.parse(attributes),
     };
-    console.log(attributes, "attributesattributesattributes");
-
-    // Generate JSON CID and store it in the database
-    const jsonCID = await generateJsonCID(JSON.stringify(jsonData));
 
     // Save image information to the database
     const image = new Image({
@@ -88,11 +63,25 @@ const uploadImage = async (req, res) => {
       description,
       imagePath,
       imageCID,
-      jsonCID,
       attributes: JSON.parse(attributes),
     });
 
     const savedImage = await image.save();
+
+    // Get the count of existing JSON files in the data folder
+    const dataFolderPath = path.join(__dirname, "..", "public", "data");
+    const fileCount = fs.readdirSync(dataFolderPath).length;
+
+    // Generate a JSON file locally with the incremented file count
+    const jsonFilePath = path.join(dataFolderPath, `${fileCount + 1}.json`);
+    fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData));
+
+    // Upload the JSON file to IPFS and get CID
+    const jsonFileCID = await uploadToIPFS(jsonFilePath);
+
+    // Update the image's JSON CID in the database
+    savedImage.jsonCID = `ipfs://${jsonFileCID}`;
+    await savedImage.save();
 
     res.status(201).json(savedImage);
   } catch (error) {

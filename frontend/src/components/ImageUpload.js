@@ -49,6 +49,7 @@ const ImageUpload = () => {
     setAttributes(updatedAttributes);
   };
 
+
   const handleUpload = async () => {
     try {
       if (!file) {
@@ -59,28 +60,30 @@ const ImageUpload = () => {
         });
         return;
       }
-
+  
       const imageData = new FormData();
       imageData.append("image", file);
       imageData.append("name", formData.name);
       imageData.append("description", formData.description);
       imageData.append("attributes", JSON.stringify(attributes));
-
+  
       const response = await axios.post(
-        "http://localhost:3000/api/images",
-        imageData
-      );
-
+              "http://localhost:3000/api/images",
+              imageData
+            );
+  
       const uploadedImage = response.data;
       toast.current.show({
         severity: "success",
         summary: "Image Uploaded",
         life: 3000,
       });
-
+      console.log(uploadedImage,"uploadedImageuploadedImage")
+  
       resetFormData();
       setFile(null);
       setAttributes([]);
+      
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.current.show({
@@ -90,7 +93,7 @@ const ImageUpload = () => {
       });
     }
   };
-
+  
   const handleDragOver = (event) => {
     event.preventDefault();
   };
